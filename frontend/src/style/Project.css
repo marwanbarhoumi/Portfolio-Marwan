@@ -1,0 +1,132 @@
+.projects-container {
+  min-height: 100vh;
+  padding: 100px 20px;
+  background: radial-gradient(circle at top, #0b1220, #050914);
+  color: #e5e7eb;
+}
+
+.projects-title {
+  font-size: 2.6rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.projects-subtitle {
+  text-align: center;
+  color: #9ca3af;
+  margin-bottom: 60px;
+}
+
+/* GRID */
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 32px;
+  max-width: 1200px;
+  margin: auto;
+}
+
+/* CARD */
+.project-card {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  overflow: hidden;
+  backdrop-filter: blur(12px);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.project-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 25px 45px rgba(79, 70, 229, 0.25);
+}
+
+/* IMAGE */
+.project-image-container {
+  height: 200px;
+  overflow: hidden;
+}
+
+.project-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.project-card:hover .project-image {
+  transform: scale(1.1);
+}
+
+/* CONTENT */
+.project-content {
+  padding: 25px;
+}
+
+.project-name {
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.project-description {
+  font-size: 0.95rem;
+  color: #cbd5f5;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+/* TAGS */
+.project-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 25px;
+}
+
+.project-tag {
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  background: rgba(79, 70, 229, 0.15);
+  color: #a5b4fc;
+  border: 1px solid rgba(79, 70, 229, 0.3);
+}
+
+/* BUTTONS */
+.project-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.project-btn {
+  flex: 1;
+  text-align: center;
+  padding: 10px 14px;
+  border-radius: 14px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.25s ease;
+}
+
+/* GitHub */
+.project-btn.github {
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #e5e7eb;
+}
+
+.project-btn.github:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* Demo */
+.project-btn.demo {
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+  color: white;
+}
+
+.project-btn.demo:hover {
+  box-shadow: 0 12px 30px rgba(124, 58, 237, 0.5);
+}
