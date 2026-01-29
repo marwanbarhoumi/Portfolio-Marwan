@@ -10,8 +10,9 @@ const port = process.env.PORT || 5000;
 
 // Middlewares
 app.use(express.json());
-app.use(cors({
-  origin: ["http://localhost:3000"] // تعديل حسب front URL
+app.options("*", cors({
+  origin: process.env.FRONTEND_URL,
+  methods: ["POST"]
 }));
 
 // Rate limiter simple
@@ -29,14 +30,15 @@ const transporter = nodemailer.createTransport({
   secure: process.env.SMTP_PORT == "465", // true for 465, false for other ports
   auth: {
     user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
+    pass: process.env.SMTP_PASS
   }
 });
 
 // Verify transporter at startup
-transporter.verify()
+transporter
+  .verify()
   .then(() => console.log("SMTP ready"))
-  .catch(err => console.error("SMTP error:", err.message));
+  .catch((err) => console.error("SMTP error:", err.message));
 
 // POST /api/contact
 app.post("/api/contact", async (req, res) => {
@@ -74,4 +76,6 @@ app.post("/api/contact", async (req, res) => {
   }
 });
 
-app.listen(port, () => console.log(`Server running on http://localhost:${port}`));
+app.listen(port, () =>
+  console.log(`Server running on http://localhost:${port}`)
+);
