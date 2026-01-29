@@ -10,10 +10,14 @@ const port = process.env.PORT || 5000;
 
 // Middlewares
 app.use(express.json());
-app.options("*", cors({
-  origin: process.env.FRONTEND_URL,
-  methods: ["POST"]
-}));
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL,
+    methods: ["POST"],
+    allowedHeaders: ["Content-Type"]
+  })
+);
+
 
 // Rate limiter simple
 const limiter = rateLimit({
