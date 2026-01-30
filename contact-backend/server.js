@@ -12,51 +12,53 @@ const port = process.env.PORT || 5000;
 
 app.set("trust proxy", 1);
 
-// Middlewares
+// ================= MIDDLEWARES =================
 app.use(express.json());
-app.use(helmet());
 
-const allowedOrigins = [
-  "https://portfolio-marwan.vercel.app",
-];
+// ---------- CORS (🔥 FIX FINAL) ----------
+const corsOptions = {
+  origin: (origin, callback) => {
+    // Allow server-to-server, Postman, Render health checks
+    if (!origin) return callback(null, true);
 
+    // Allow main production domain
+    if (origin === "https://portfolio-marwan.vercel.app") {
+      return callback(null, true);
+    }
+
+    // Allow ALL Vercel preview deployments
+    if (/\.vercel\.app$/.test(origin)) {
+      return callback(null, true);
+    }
+
+    return callback(new Error("Not allowed by CORS"));
+  },
+  methods: ["POST", "OPTIONS"],
+  allowedHeaders: ["Content-Type"],
+};
+
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions)); // 🔥 VERY IMPORTANT
+
+// ---------- Security ----------
 app.use(
-  cors({
-    origin: (origin, callback) => {
-      // allow server-to-server / postman / render health checks
-      if (!origin) return callback(null, true);
-
-      // allow production
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      }
-
-      // allow all vercel preview deployments
-      if (origin.endsWith(".vercel.app")) {
-        return callback(null, true);
-      }
-
-      return callback(new Error("Not allowed by CORS"));
-    },
-    methods: ["POST"],
+  helmet({
+    crossOriginResourcePolicy: false,
   })
 );
 
-
-// Rate limit (ANTI SPAM)
+// ---------- Rate Limit (ANTI SPAM) ----------
 const limiter = rateLimit({
   windowMs: 60 * 1000,
   max: 5,
   standardHeaders: true,
   legacyHeaders: false,
-  message: {
-    error: "Too many requests. Please wait 1 minute.",
-  },
+  message: { error: "Too many requests. Please wait 1 minute." },
 });
 
 app.use("/api/contact", limiter);
 
-// Nodemailer
+// ================= EMAIL =================
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
   port: Number(process.env.SMTP_PORT || 587),
@@ -68,13 +70,13 @@ const transporter = nodemailer.createTransport({
 });
 
 transporter.verify()
-  .then(() => console.log("SMTP ready"))
-  .catch(err => console.error("SMTP error:", err.message));
+  .then(() => console.log("✅ SMTP ready"))
+  .catch(err => console.error("❌ SMTP error:", err.message));
 
-// Route
+// ================= ROUTE =================
 app.post("/api/contact", async (req, res) => {
   try {
-    const { name, email, message } = req.body;
+    const { name, email, message } = req.body || {};
 
     if (!name || !email || !message) {
       return res.status(400).json({ error: "All fields are required" });
@@ -89,9 +91,8 @@ app.post("/api/contact", async (req, res) => {
       from: `"Portfolio Contact" <${process.env.FROM_EMAIL}>`,
       to: process.env.TO_EMAIL,
       subject: `New message from ${name}`,
-      text: message,
       html: `
-        <h3>New message</h3>
+        <h3>New message from portfolio</h3>
         <p><b>Name:</b> ${name}</p>
         <p><b>Email:</b> ${email}</p>
         <hr/>
@@ -101,11 +102,12 @@ app.post("/api/contact", async (req, res) => {
 
     res.json({ success: true });
   } catch (err) {
-    console.error(err);
+    console.error("Send error:", err);
     res.status(500).json({ error: "Server error" });
   }
 });
 
-app.listen(port, () =>
-  console.log(`Server running on port ${port}`)
-);
+// ================= START =================
+app.listen(port, () => {
+  console.log(`🚀 Server running on port ${port}`);
+});
