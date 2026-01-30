@@ -10,26 +10,21 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 5000;
 
-app.set("trust proxy", 1);
+app.set("trust proxy", 1); // مهم على Render
 
 // ================= MIDDLEWARES =================
 app.use(express.json());
 
-// ---------- CORS (🔥 FIX FINAL) ----------
+// ---------- CORS MULTI-ORIGIN ----------
 const corsOptions = {
   origin: (origin, callback) => {
-    // Allow server-to-server, Postman, Render health checks
-    if (!origin) return callback(null, true);
+    if (!origin) return callback(null, true); // Postman, server-to-server requests
 
-    // Allow main production domain
-    if (origin === "https://portfolio-marwan.vercel.app") {
-      return callback(null, true);
-    }
+    // Production
+    if (origin === "https://portfolio-marwan.vercel.app") return callback(null, true);
 
-    // Allow ALL Vercel preview deployments
-    if (/\.vercel\.app$/.test(origin)) {
-      return callback(null, true);
-    }
+    // All Vercel preview deployments
+    if (/\.vercel\.app$/.test(origin)) return callback(null, true);
 
     return callback(new Error("Not allowed by CORS"));
   },
@@ -37,20 +32,19 @@ const corsOptions = {
   allowedHeaders: ["Content-Type"],
 };
 
-app.use(cors(corsOptions));
-app.options("*", cors(corsOptions)); // 🔥 VERY IMPORTANT
+app.use(cors(corsOptions)); // ✅ لا حاجة لـ app.options("*")
 
-// ---------- Security ----------
+// ---------- SECURITY ----------
 app.use(
   helmet({
     crossOriginResourcePolicy: false,
   })
 );
 
-// ---------- Rate Limit (ANTI SPAM) ----------
+// ---------- RATE LIMIT ----------
 const limiter = rateLimit({
-  windowMs: 60 * 1000,
-  max: 5,
+  windowMs: 60 * 1000, // 1 دقيقة
+  max: 5, // أقصى 5 requests لكل دقيقة
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: "Too many requests. Please wait 1 minute." },
@@ -69,6 +63,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+// Verify transporter at startup
 transporter.verify()
   .then(() => console.log("✅ SMTP ready"))
   .catch(err => console.error("❌ SMTP error:", err.message));
@@ -82,6 +77,7 @@ app.post("/api/contact", async (req, res) => {
       return res.status(400).json({ error: "All fields are required" });
     }
 
+    // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       return res.status(400).json({ error: "Invalid email" });
@@ -107,7 +103,7 @@ app.post("/api/contact", async (req, res) => {
   }
 });
 
-// ================= START =================
+// ================= START SERVER =================
 app.listen(port, () => {
   console.log(`🚀 Server running on port ${port}`);
 });
