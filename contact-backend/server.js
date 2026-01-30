@@ -3,83 +3,89 @@ import nodemailer from "nodemailer";
 import dotenv from "dotenv";
 import cors from "cors";
 import rateLimit from "express-rate-limit";
+import helmet from "helmet";
 
 dotenv.config();
+
 const app = express();
 const port = process.env.PORT || 5000;
 
+app.set("trust proxy", 1);
+
 // Middlewares
 app.use(express.json());
+app.use(helmet());
+
 app.use(
   cors({
-    origin: "*",
+    origin: process.env.FRONTEND_URL,
     methods: ["POST"],
-    allowedHeaders: ["Content-Type"]
   })
 );
 
-
-// Rate limiter simple
+// Rate limit (ANTI SPAM)
 const limiter = rateLimit({
-  windowMs: 60 * 1000, // 1 minute
-  max: 5, // max 5 requests per window
-  message: { error: "Too many requests, try again later." }
+  windowMs: 60 * 1000,
+  max: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    error: "Too many requests. Please wait 1 minute.",
+  },
 });
+
 app.use("/api/contact", limiter);
 
-// Nodemailer transporter
+// Nodemailer
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
   port: Number(process.env.SMTP_PORT || 587),
-  secure: process.env.SMTP_PORT == "465", // true for 465, false for other ports
+  secure: process.env.SMTP_PORT === "465",
   auth: {
     user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS
-  }
+    pass: process.env.SMTP_PASS,
+  },
 });
 
-// Verify transporter at startup
-transporter
-  .verify()
+transporter.verify()
   .then(() => console.log("SMTP ready"))
-  .catch((err) => console.error("SMTP error:", err.message));
+  .catch(err => console.error("SMTP error:", err.message));
 
-// POST /api/contact
+// Route
 app.post("/api/contact", async (req, res) => {
   try {
-    const { name, email, message } = req.body || {};
+    const { name, email, message } = req.body;
 
-    // Basic validation
     if (!name || !email || !message) {
-      return res.status(400).json({ error: "All fields are required." });
+      return res.status(400).json({ error: "All fields are required" });
     }
-    // Optionally: validate email format with regex
 
-    // Build email
-    const mailOptions = {
-      from: `"Website Contact" <${process.env.FROM_EMAIL}>`,
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ error: "Invalid email" });
+    }
+
+    await transporter.sendMail({
+      from: `"Portfolio Contact" <${process.env.FROM_EMAIL}>`,
       to: process.env.TO_EMAIL,
-      subject: `Nouveau message de ${name}`,
-      text: `Nom: ${name}\nEmail: ${email}\n\nMessage:\n${message}`,
+      subject: `New message from ${name}`,
+      text: message,
       html: `
-        <h3>Nouveau message depuis le site</h3>
-        <p><strong>Nom:</strong> ${name}</p>
-        <p><strong>Email:</strong> ${email}</p>
+        <h3>New message</h3>
+        <p><b>Name:</b> ${name}</p>
+        <p><b>Email:</b> ${email}</p>
         <hr/>
         <p>${message.replace(/\n/g, "<br/>")}</p>
-      `
-    };
+      `,
+    });
 
-    // Send mail
-    const info = await transporter.sendMail(mailOptions);
-    console.log("Message sent:", info.messageId);
-    return res.json({ success: true, message: "Message sent" });
+    res.json({ success: true });
   } catch (err) {
-    console.error("Send mail error:", err);
-    return res.status(500).json({ error: "Failed to send message" });
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
   }
 });
 
 app.listen(port, () =>
-  console.log(`Server running on http://localhost:${port}`)
+  console.log(`Server running on port ${port}`)
 );

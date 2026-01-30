@@ -10,9 +10,11 @@ export const sendEmail = async (form) => {
     }
   );
 
+  const data = await res.json();
+
   if (!res.ok) {
-    throw new Error("Failed to send message");
+    throw new Error(data.error || "Failed");
   }
 
-  return res.json();
+  return data;
 };
