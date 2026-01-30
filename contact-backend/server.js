@@ -16,12 +16,32 @@ app.set("trust proxy", 1);
 app.use(express.json());
 app.use(helmet());
 
+const allowedOrigins = [
+  "https://portfolio-marwan.vercel.app",
+];
+
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL,
+    origin: (origin, callback) => {
+      // allow server-to-server / postman / render health checks
+      if (!origin) return callback(null, true);
+
+      // allow production
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      // allow all vercel preview deployments
+      if (origin.endsWith(".vercel.app")) {
+        return callback(null, true);
+      }
+
+      return callback(new Error("Not allowed by CORS"));
+    },
     methods: ["POST"],
   })
 );
+
 
 // Rate limit (ANTI SPAM)
 const limiter = rateLimit({
