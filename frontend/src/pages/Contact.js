@@ -1,81 +1,83 @@
 import { useState } from "react";
-import "../style/Contact.css";
 import { sendEmail } from "../Email";
-import useScrollReveal from "../hooks/useScrollReveal";
 
 function Contact() {
   const [form, setForm] = useState({
     name: "",
     email: "",
-    message: ""
+    message: "",
   });
 
-  useScrollReveal();
+  const [status, setStatus] = useState("idle");
 
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setStatus("loading");
 
-    sendEmail(form)
-      .then(() => {
-        alert(`Merci ${form.name}, votre message a été envoyé ✅`);
-        setForm({ name: "", email: "", message: "" });
-      })
-      .catch((err) => {
-        console.error(err);
-        alert("Erreur lors de l'envoi ❌");
-      });
+    try {
+      await sendEmail(form);
+      setStatus("success");
+      setForm({ name: "", email: "", message: "" });
+    } catch (err) {
+      if (err.message.includes("Too many")) {
+        setStatus("limit");
+      } else {
+        setStatus("error");
+      }
+    }
   };
 
   return (
     <section className="contact-section">
-      <div className="contact-card reveal">
-        <h2 className="contact-title">Contactez-moi</h2>
+      <h2>Contact</h2>
 
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label>Nom</label>
-            <input
-              type="text"
-              name="name"
-              value={form.name}
-              onChange={handleChange}
-              placeholder="Entrez votre nom"
-              required
-            />
-          </div>
+      <form onSubmit={handleSubmit}>
+        <input
+          name="name"
+          placeholder="Your name"
+          value={form.name}
+          onChange={handleChange}
+          required
+        />
 
-          <div className="form-group">
-            <label>Adresse e-mail</label>
-            <input
-              type="email"
-              name="email"
-              value={form.email}
-              onChange={handleChange}
-              placeholder="exemple@mail.com"
-              required
-            />
-          </div>
+        <input
+          name="email"
+          type="email"
+          placeholder="Your email"
+          value={form.email}
+          onChange={handleChange}
+          required
+        />
 
-          <div className="form-group">
-            <label>Message</label>
-            <textarea
-              name="message"
-              rows="5"
-              value={form.message}
-              onChange={handleChange}
-              placeholder="Écrivez votre message ici..."
-              required
-            />
-          </div>
+        <textarea
+          name="message"
+          placeholder="Your message"
+          value={form.message}
+          onChange={handleChange}
+          required
+        />
 
-          <button type="submit" className="contact-btn">
-            Envoyer
-          </button>
-        </form>
-      </div>
+        <button disabled={status === "loading"}>
+          {status === "loading" ? "Sending..." : "Send"}
+        </button>
+
+        {status === "success" && (
+          <p className="success">Message sent successfully ✅</p>
+        )}
+
+        {status === "limit" && (
+          <p className="warning">
+            Too many requests ⏳ please wait 1 minute
+          </p>
+        )}
+
+        {status === "error" && (
+          <p className="error">Something went wrong ❌</p>
+        )}
+      </form>
     </section>
   );
 }
