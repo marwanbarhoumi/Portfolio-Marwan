@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { sendEmail } from "../Email";
+import "../style/Contact.css";
 
 function Contact() {
   const [form, setForm] = useState({
@@ -8,45 +9,45 @@ function Contact() {
     message: "",
   });
 
-  const [status, setStatus] = useState("idle");
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setStatus("loading");
+    setLoading(true);
 
     try {
       await sendEmail(form);
-      setStatus("success");
+      alert(`✅ Merci ${form.name}, message envoyé`);
       setForm({ name: "", email: "", message: "" });
     } catch (err) {
-      if (err.message.includes("Too many")) {
-        setStatus("limit");
-      } else {
-        setStatus("error");
-      }
+      console.error(err);
+      alert("❌ Erreur lors de l'envoi");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <section className="contact-section">
-      <h2>Contact</h2>
+      <h2>📧 Contactez-moi</h2>
 
-      <form onSubmit={handleSubmit}>
+      <form className="contact-form" onSubmit={handleSubmit}>
         <input
+          type="text"
           name="name"
-          placeholder="Your name"
+          placeholder="Votre nom"
           value={form.name}
           onChange={handleChange}
           required
         />
 
         <input
-          name="email"
           type="email"
-          placeholder="Your email"
+          name="email"
+          placeholder="Votre email"
           value={form.email}
           onChange={handleChange}
           required
@@ -54,29 +55,16 @@ function Contact() {
 
         <textarea
           name="message"
-          placeholder="Your message"
+          placeholder="Votre message"
+          rows="5"
           value={form.message}
           onChange={handleChange}
           required
         />
 
-        <button disabled={status === "loading"}>
-          {status === "loading" ? "Sending..." : "Send"}
+        <button type="submit" disabled={loading}>
+          {loading ? "Envoi..." : "Envoyer"}
         </button>
-
-        {status === "success" && (
-          <p className="success">Message sent successfully ✅</p>
-        )}
-
-        {status === "limit" && (
-          <p className="warning">
-            Too many requests ⏳ please wait 1 minute
-          </p>
-        )}
-
-        {status === "error" && (
-          <p className="error">Something went wrong ❌</p>
-        )}
       </form>
     </section>
   );

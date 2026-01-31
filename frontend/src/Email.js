@@ -1,20 +1,14 @@
-export const sendEmail = async (form) => {
-  const res = await fetch(
-    `${process.env.REACT_APP_API_URL}/api/contact`,
+import emailjs from "emailjs-com";
+// Fonction pour envoyer l'email
+export const sendEmail = (form) => {
+  return emailjs.send(
+    "service_mdqrmbq", // Ton Service ID EmailJS
+    "template_6oeusfo", // Ton Template ID EmailJS
     {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(form),
-    }
+      from_name: form.name,
+      from_email: form.email,
+      message: form.message
+    },
+    "rZntrXRJ-CWDXfiUS" // Ton User ID EmailJS
   );
-
-  const data = await res.json();
-
-  if (!res.ok) {
-    throw new Error(data.error || "Failed");
-  }
-
-  return data;
 };
