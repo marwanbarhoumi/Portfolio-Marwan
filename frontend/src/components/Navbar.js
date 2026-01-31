@@ -1,18 +1,19 @@
 import { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import { Menu, X, Globe, Moon, Sun } from "lucide-react";
-import { useLanguage } from "../context/LanguageContext";
 import "../style/Navbar.css";
 
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [darkMode, setDarkMode] = useState(true);
+  const [language, setLanguage] = useState("FR");
 
-  const { lang, toggleLang } = useLanguage();
-
+  // Effect لـ Scroll
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 50);
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 50);
+    };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -22,49 +23,173 @@ function Navbar() {
     document.body.classList.toggle("light-mode");
   };
 
+  const toggleLanguage = () => {
+    setLanguage(language === "FR" ? "EN" : "FR");
+  };
+
   return (
     <header
-      className={`navbar ${scrolled ? "scrolled" : ""} ${
-        darkMode ? "dark" : "light"
-      }`}
+      className={`navbar ${scrolled ? "scrolled" : ""} ${darkMode ? "dark" : "light"}`}
     >
       <div className="navbar-container">
-        {/* Logo */}
-        <NavLink to="/" className="navbar-brand" onClick={() => setIsOpen(false)}>
-          <span className="logo-main">Marwen</span>
-          <span className="logo-sub">DEV</span>
-        </NavLink>
+        {/* Logo Section */}
+        <div className="navbar-brand-wrapper">
+          <NavLink
+            to="/"
+            className="navbar-brand"
+            onClick={() => setIsOpen(false)}
+          >
+            <div className="logo-text">
+              <span className="logo-main">Marwen</span>
+            </div>
+            <div className="logo-sub">DEV</div>
+          </NavLink>
+        </div>
 
-        {/* Desktop Nav */}
+        {/* Desktop Navigation */}
         <nav className="navbar-center">
           <ul className="navbar-menu">
-            <li><NavLink to="/">Accueil</NavLink></li>
-            <li><NavLink to="/about">À propos</NavLink></li>
-            <li><NavLink to="/projects">Projets</NavLink></li>
-            <li><NavLink to="/skills">Compétences</NavLink></li>
-            <li><NavLink to="/contact">Contact</NavLink></li>
+            <li>
+              <NavLink
+                to="/"
+                end
+                className={({ isActive }) => (isActive ? "active" : "")}
+                onClick={() => setIsOpen(false)}
+              >
+                <span className="nav-icon">🏠</span>
+                Accueil
+              </NavLink>
+            </li>
+
+            <li>
+              <NavLink
+                to="/about"
+                className={({ isActive }) => (isActive ? "active" : "")}
+                onClick={() => setIsOpen(false)}
+              >
+                <span className="nav-icon">👨‍💻</span>À propos
+              </NavLink>
+            </li>
+
+            <li>
+              <NavLink
+                to="/projects"
+                className={({ isActive }) => (isActive ? "active" : "")}
+                onClick={() => setIsOpen(false)}
+              >
+                <span className="nav-icon">🚀</span>
+                Projets
+              </NavLink>
+            </li>
+
+            <li>
+              <NavLink
+                to="/skills"
+                className={({ isActive }) => (isActive ? "active" : "")}
+                onClick={() => setIsOpen(false)}
+              >
+                <span className="nav-icon">⚡</span>
+                Compétences
+              </NavLink>
+            </li>
+
+            <li>
+              <NavLink
+                to="/contact"
+                className={({ isActive }) => (isActive ? "active" : "")}
+                onClick={() => setIsOpen(false)}
+              >
+                <span className="nav-icon">📧</span>
+                Contact
+              </NavLink>
+            </li>
           </ul>
         </nav>
 
-        {/* Right */}
+        {/* Right Side Controls */}
         <div className="navbar-right">
-          {/* Language */}
-          <button className="language-switcher" onClick={toggleLang}>
+          {/* Language Switcher */}
+          <button className="language-switcher" onClick={toggleLanguage}>
             <Globe size={18} />
-            <span className="language-text">
-              {lang === "fr" ? "EN" : "FR"}
-            </span>
+            <span className="language-text">{language}</span>
           </button>
 
-          {/* Theme */}
+          {/* Theme Toggle */}
           <button className="theme-toggle" onClick={toggleTheme}>
             {darkMode ? <Sun size={20} /> : <Moon size={20} />}
           </button>
 
-          {/* Mobile */}
-          <button className="hamburger" onClick={() => setIsOpen(!isOpen)}>
+          {/* Hamburger Menu (Mobile) */}
+          <button
+            className="hamburger"
+            onClick={() => setIsOpen(!isOpen)}
+            aria-label="Toggle menu"
+          >
             {isOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
+        </div>
+      </div>
+
+      {/* Mobile Menu */}
+      <div className={`mobile-menu ${isOpen ? "open" : ""}`}>
+        <div className="mobile-menu-content">
+          <ul className="mobile-nav">
+            <li>
+              <NavLink to="/" end onClick={() => setIsOpen(false)}>
+                <span className="mobile-icon">🏠</span>
+                Accueil
+              </NavLink>
+            </li>
+            <li>
+              <NavLink to="/about" onClick={() => setIsOpen(false)}>
+                <span className="mobile-icon">👨‍💻</span>À propos
+              </NavLink>
+            </li>
+            <li>
+              <NavLink to="/projects" onClick={() => setIsOpen(false)}>
+                <span className="mobile-icon">🚀</span>
+                Projets
+              </NavLink>
+            </li>
+            <li>
+              <NavLink to="/skills" onClick={() => setIsOpen(false)}>
+                <span className="mobile-icon">⚡</span>
+                Compétences
+              </NavLink>
+            </li>
+            <li>
+              <NavLink to="/contact" onClick={() => setIsOpen(false)}>
+                <span className="mobile-icon">📧</span>
+                Contact
+              </NavLink>
+            </li>
+          </ul>
+
+          <div className="mobile-actions">
+            <div className="mobile-controls">
+              <button
+                className="mobile-language"
+                onClick={() => {
+                  toggleLanguage();
+                  setIsOpen(false);
+                }}
+              >
+                <Globe size={18} />
+                <span>{language === "FR" ? "English" : "Français"}</span>
+              </button>
+
+              <button
+                className="mobile-theme"
+                onClick={() => {
+                  toggleTheme();
+                  setIsOpen(false);
+                }}
+              >
+                {darkMode ? <Sun size={20} /> : <Moon size={20} />}
+                <span>{darkMode ? "Mode Clair" : "Mode Sombre"}</span>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </header>
