@@ -3,14 +3,14 @@ import { createContext, useContext, useState } from "react";
 const LanguageContext = createContext();
 
 export const LanguageProvider = ({ children }) => {
-  const [lang, setLang] = useState("fr");
+  const [language, setLanguage] = useState("FR");
 
-  const toggleLang = () => {
-    setLang((prev) => (prev === "fr" ? "en" : "fr"));
+  const toggleLanguage = () => {
+    setLanguage((prev) => (prev === "FR" ? "EN" : "FR"));
   };
 
   return (
-    <LanguageContext.Provider value={{ lang, toggleLang }}>
+    <LanguageContext.Provider value={{ language, toggleLanguage }}>
       {children}
     </LanguageContext.Provider>
   );

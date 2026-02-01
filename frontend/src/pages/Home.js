@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
+import { useLanguage } from "../context/LanguageContext";
 import "../style/Home.css";
 
 import { ArrowRight, Code, Cloud, Cpu } from "lucide-react";
 
 function Home() {
+  const { language } = useLanguage();
+
   const [text, setText] = useState("");
   const fullText = "Marwen";
 
@@ -20,6 +23,25 @@ function Home() {
 
     return () => clearInterval(typing);
   }, []);
+
+  // 🌍 Texts FR / EN
+  const t = {
+    greeting: language === "FR" ? "Bonjour, je suis" : "Hello, I'm",
+    subtitle1:
+      language === "FR"
+        ? "Je crée des expériences digitales exceptionnelles avec une expertise en développement Full-Stack, architectures Cloud et automatisation CI/CD."
+        : "I build outstanding digital experiences with expertise in Full-Stack development, Cloud architectures, and CI/CD automation.",
+    subtitle2:
+      language === "FR"
+        ? "Passionné par les technologies modernes, le cloud computing et les architectures microservices scalables."
+        : "Passionate about modern technologies, cloud computing, and scalable microservices architectures.",
+    projects: language === "FR" ? "Voir mes projets" : "View my projects",
+    contact: language === "FR" ? "Me contacter" : "Contact me",
+    statsProjects: language === "FR" ? "Projets" : "Projects",
+    statsYears: language === "FR" ? "Ans Exp" : "Years Exp",
+    statsSatisfaction:
+      language === "FR" ? "Satisfaction" : "Satisfaction",
+  };
 
   return (
     <section className="home-container" id="home">
@@ -42,7 +64,7 @@ function Home() {
         </div>
 
         <div className="intro-text">
-          <h6 className="greeting">Bonjour, Je suis</h6>
+          <h6 className="greeting">{t.greeting}</h6>
           <h1 className="home-title">
             <span className="typed-text">{text}</span>
             <span className="cursor">|</span>
@@ -51,46 +73,39 @@ function Home() {
         </div>
 
         <div className="description-container">
-          <p className="home-subtitle">
-            Je crée des <span className="highlight">expériences digitales</span> exceptionnelles 
-            avec une expertise en <strong>développement Full-Stack</strong>, 
-            <strong> architectures Cloud</strong>, et <strong>automatisation CI/CD</strong>.
-          </p>
-          <p className="home-subtitle-secondary">
-            Passionné par les technologies modernes, le cloud computing 
-            et les microservices scalable.
-          </p>
+          <p className="home-subtitle">{t.subtitle1}</p>
+          <p className="home-subtitle-secondary">{t.subtitle2}</p>
         </div>
 
         <div className="cta-buttons">
           <a href="projects" className="primary-btn">
-            Voir mes projets
+            {t.projects}
             <ArrowRight className="btn-icon" />
           </a>
           <a href="contact" className="secondary-btn">
-            Me contacter
+            {t.contact}
           </a>
         </div>
 
         <div className="stats-container">
           <div className="stat-item">
             <span className="stat-number">15+</span>
-            <span className="stat-label">Projets</span>
+            <span className="stat-label">{t.statsProjects}</span>
           </div>
           <div className="stat-divider"></div>
           <div className="stat-item">
             <span className="stat-number">3+</span>
-            <span className="stat-label">Ans Exp</span>
+            <span className="stat-label">{t.statsYears}</span>
           </div>
           <div className="stat-divider"></div>
           <div className="stat-item">
             <span className="stat-number">100%</span>
-            <span className="stat-label">Satisfaction</span>
+            <span className="stat-label">{t.statsSatisfaction}</span>
           </div>
         </div>
       </div>
 
-      {/* الزخارف */}
+      {/* Decorations */}
       <div className="hero-decoration">
         <div className="circle shape"></div>
         <div className="square shape"></div>

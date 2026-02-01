@@ -8,12 +8,15 @@ import Projects from './pages/Projects';
 import Contact from './pages/Contact';
 import Footer from './components/Footer';
 import Skills from './pages/Skills';
+import { LanguageProvider } from "./context/LanguageContext";
+
 
 function App() {
   const [darkMode] = useState(true);
 
   return (
     <div className={darkMode ? 'bg-dark text-light' : 'bg-light text-dark'} style={{ minHeight: '100vh' }}>
+      <LanguageProvider>
       <Router>
         <Navbar />
         <div className="container-py-3">
@@ -30,6 +33,7 @@ function App() {
         </div>
         <Footer />
       </Router>
+      </LanguageProvider>
     </div>
   );
 }

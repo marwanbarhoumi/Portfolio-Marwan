@@ -1,23 +1,34 @@
 import React from "react";
+import { useLanguage } from "../context/LanguageContext";
 import projects from "../data/projects";
 import "../style/Project.css";
 
 function Projects() {
+  const { language } = useLanguage();
+
+  const t = {
+    title: language === "FR" ? "Mes Projets" : "My Projects",
+    subtitle:
+      language === "FR"
+        ? "Quelques projets qui reflètent mon parcours Full-Stack & DevOps"
+        : "Some projects that reflect my Full-Stack & DevOps journey",
+    code: language === "FR" ? "Code" : "Code",
+    demo: language === "FR" ? "Démo" : "Demo",
+  };
+
   return (
     <section className="projects-container">
-      <h2 className="projects-title">Mes Projets</h2>
-      <p className="projects-subtitle">
-        Quelques projets qui reflètent mon parcours Full-Stack & DevOps
-      </p>
+      <h2 className="projects-title">{t.title}</h2>
+      <p className="projects-subtitle">{t.subtitle}</p>
 
       <div className="projects-grid">
         {projects.map((project, i) => (
           <div className="project-card" key={i}>
-            
-
             <div className="project-content">
               <h5 className="project-name">{project.title}</h5>
-              <p className="project-description">{project.description}</p>
+              <p className="project-description">
+                {project.description}
+              </p>
 
               <div className="project-tags">
                 {project.tags?.map((tag, index) => (
@@ -35,7 +46,7 @@ function Projects() {
                     rel="noreferrer"
                     className="project-btn github"
                   >
-                    <i className="bi bi-github"></i> Code
+                    <i className="bi bi-github"></i> {t.code}
                   </a>
                 )}
 
@@ -46,7 +57,7 @@ function Projects() {
                     rel="noreferrer"
                     className="project-btn demo"
                   >
-                    <i className="bi bi-box-arrow-up-right"></i> Demo
+                    <i className="bi bi-box-arrow-up-right"></i> {t.demo}
                   </a>
                 )}
               </div>
