@@ -4,7 +4,7 @@ const projects = [
     description: "Projet Cabinet Dentaire — Full Stack MERN",
     image: "https://cabinet-dentiste.vercel.app",
     github: "https://github.com/marwanbarhoumi/cabinet-dentiste",
-    demo: "#", // si t'as pas d'hébergement
+    demo: "https://cabinet-dentiste.vercel.app/login", // si t'as pas d'hébergement
     tags: ["React", "Node.js", "MongoDB", "Full Stack" , "Docker" ,"Vercel", "Render" ]
   },
     {
