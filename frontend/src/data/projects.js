@@ -1,4 +1,12 @@
 const projects = [
+  {
+    title: "Accessoire",
+    description: "Projet Cabinet Dentaire — Full Stack MERN",
+    image: "https://cabinet-dentiste.vercel.app",
+    github: "https://github.com/marwanbarhoumi/cabinet-dentiste",
+    demo: "#", // si t'as pas d'hébergement
+    tags: ["React", "Node.js", "MongoDB", "Full Stack" , "Docker" ,"Vercel", "Render" ]
+  },
     {
     title: "DEVELOPPEMENT D ’ UNE PLATEFORME E-COMMERCE EN AVEC CI/CD (Memoire)",
     description: "Application complète avec React (frontend) et Express/MongoDB (backend). ",
@@ -57,12 +65,20 @@ const projects = [
   },
   
   {
-    title: "Accessoire",
+    title: "Weather-API",
     description: "application Weather-API",
     image: "https://source.unsplash.com/600x400/?quiz,react",
-    github: "https://github.com/marwanbarhoumi/accessoire",
+    github: "https://github.com/marwanbarhoumi/Weather-API",
     demo: "#", // si t'as pas d'hébergement
-    tags: ["HTML", "CSS"]
+    tags: ["React", "CSS"]
+  },
+    {
+    title: "Accessoire",
+    description: "Projet Cabinet Dentaire — Full Stack MERN",
+    image: "https://cabinet-dentiste.vercel.app",
+    github: "https://github.com/marwanbarhoumi/cabinet-dentiste",
+    demo: "#", // si t'as pas d'hébergement
+    tags: ["React", "Node.js", "MongoDB", "Full Stack" , "Docker" ,"Vercel", "Render" ]
   },
 ];
 
