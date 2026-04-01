@@ -1,6 +1,6 @@
 const projects = [
   {
-    title: "Accessoire",
+    title: "Cabinet Dentaire",
     description: "Projet Cabinet Dentaire — Full Stack MERN",
     image: "https://cabinet-dentiste.vercel.app",
     github: "https://github.com/marwanbarhoumi/cabinet-dentiste",
